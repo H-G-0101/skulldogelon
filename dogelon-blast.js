@@ -45,6 +45,11 @@
   function spawnBlast(scene, hero) {
     var b = scene.createObject('HeroAttackHitbox');
     if (!b) return;
+    // createObject nasce com zOrder 0, e o LevelMap fica em z=1: sem isso o
+    // tiro passa POR TRAS das paredes e so reaparece depois do cenario.
+    // (o codigo original faz o mesmo com o EnemyDeathFire, copiando o z do
+    // inimigo — aqui o valor e' calculado uma vez ao carregar a cena.)
+    b.setZOrder(scene.__blastZ || 10100);
     var flipped = hero.getBehavior('Flippable').isFlippedX();
     b.setPosition(hero.getPointX('AttackOrigin'), hero.getPointY('AttackOrigin'));
     b.setAnimationName('BlastFly');
@@ -80,6 +85,16 @@
     scene.__respawnT = 0;
     scene.__respawning = true;
     scene.__deadT = 0;
+    // z do projetil: acima de tudo que existe na camada base (mapa, heroi,
+    // inimigos, chefe), pra a bala nunca sumir atras do cenario.
+    var maxZ = 0;
+    ['LevelMap', 'Hero', 'HeroHitbox', 'HeroAttackHitbox', 'Skeleton',
+     'Ghost', 'Wolf', 'BossSkull', 'EnemyDeathFire'].forEach(function (n) {
+      scene.getObjects(n).forEach(function (o) {
+        if (o.getLayer() === '' && o.getZOrder() > maxZ) maxZ = o.getZOrder();
+      });
+    });
+    scene.__blastZ = maxZ + 10;
     // A instancia colocada no editor vira apenas molde: fica escondida e fora
     // do caminho, senao ela encostaria nos inimigos parada no ar.
     var pool = scene.getObjects('HeroAttackHitbox');
