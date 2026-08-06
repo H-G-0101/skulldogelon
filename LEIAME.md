@@ -34,8 +34,16 @@ servidor local para testar:
 - **Ataque corpo a corpo virou tiro à distância** (`dogelon-blast.js`).
   O projétil usa a folha `Dogelon_Blast` e aplica dano reusando as mesmas
   variáveis dos inimigos do jogo original.
-- **Paleta de Marte** aplicada em céu, vila, tileset, esqueleto, fantasma
-  e dasher. O rosto ciano do fantasma foi mantido de propósito: é a cor
+- **Cenário convertido para laboratório sci-fi** com o tileset da Foozle
+  (CC0). O `Level1.json` NÃO foi tocado: o papel de cada tile foi inferido
+  do próprio mapa (quais vizinhos são sólidos) e a arte equivalente foi
+  pintada no mesmo slot do atlas `tiles.png`. Dados do mapa, classes
+  `Platform` e todos os polígonos de colisão — inclusive as 90 células de
+  rampa — continuam idênticos.
+  Os 415 tiles de fundo foram distribuídos por **brilho**, não por sorteio,
+  para a silhueta da estrutura antiga virar relevo de painel em vez de
+  ruído. Paralaxe e esqueleto repintados para o tom frio do laboratório.
+- **Paleta de Marte** ainda aplicada no fantasma e no dasher. O rosto ciano do fantasma foi mantido de propósito: é a cor
   complementar do rust e garante leitura contra o fundo.
 - **Morte, respawn e explosão** ligados:
   - `Dead` (18 frames) toca quando o herói entra no estado `Death`.
@@ -43,8 +51,44 @@ servidor local para testar:
     desce no feixe de luz. Cancela sozinho se o jogador mexer; nunca
     prende o controle.
   - `Explode` (6 frames) substituiu o `EnemyDeathFire`.
+- **Tela de carregamento (splash)** própria: `SplashDogelonMars.png`.
+  Desenhada em 320x180 e ampliada 4x com NEAREST, pra o pixel bater com o
+  jogo. Logo do GDevelop desligado, barra de progresso em dourado quente,
+  `minDuration` de 2,5 s pra dar tempo de ler.
 - **Retrato do HUD** trocado pela cabeça do Dogelon.
+- **Marca "Made with GDevelop" desligada** via `properties.watermark.showWatermark`
+  no `data.js` (é a mesma chave que o editor mexe). Ver nota de licença abaixo.
 - Tela de título, textos de controle e nome do projeto atualizados.
+
+## Se for editar o splash
+
+O renderer do GDevelop escala o fundo em modo **cover** (`Math.max` entre as
+razões) e centraliza. Em telas mais estreitas que 16:9 as laterais são
+cortadas — nada importante pode encostar nas bordas.
+
+A barra de progresso é desenhada por cima, centralizada, em
+`y = altura - 90 - alturaDaBarra`. Num viewport de 720 isso é y 616..630,
+ou seja y 154..157 no desenho de 320x180. Essa faixa fica limpa de propósito.
+
+## Créditos de assets
+
+- Sci-Fi Labs Tileset — Foozle (foozle.io), **CC0**, encomendado de aimen23b.
+  Uso comercial livre, atribuição não exigida.
+- Sprites do Dogelon — pack oficial da VibeCon 2026.
+- Trilha sonora — do projeto original (Johnathan So). **Trocar ou creditar
+  antes de submeter.**
+
+## Nota de licença — marca do GDevelop
+
+A engine do GDevelop é open source sob licença MIT e os jogos podem ser
+distribuídos sem royalties. A marca "Made with GDevelop", porém, é o que
+o **tier gratuito** entrega: removê-la é um recurso das assinaturas pagas,
+e a FAQ do projeto lista "deixar o splash screen" como uma forma de
+contribuir com a engine.
+
+Ou seja: tecnicamente sai, mas se você não tem assinatura, vale considerar
+creditar o GDevelop nos créditos do jogo ou na página de submissão. A tela
+de Credits do projeto já existe e é um bom lugar.
 
 ## Nota sobre a ordem dos frames
 
@@ -60,7 +104,6 @@ a cadência do efeito.
 - Sons: os arquivos não chegaram. A trilha atual é do projeto original
   (Johnathan So) — precisa creditar ou substituir antes de submeter.
 - O boss ainda é a caveira original (já é laranja/fogo, combina com Marte).
-- A marca "Made with GDevelop" no canto vem do tier gratuito do GDevelop.
 
 ## Checklist da submissão VibeCon
 
