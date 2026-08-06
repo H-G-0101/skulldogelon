@@ -1,0 +1,28 @@
+#!/bin/sh
+# PNGs do heroi antigo, nao referenciados mais pelo data.js.
+# Rode na raiz do repo DEPOIS de copiar os arquivos novos por cima.
+
+rm -f "Attack-1.png"
+rm -f "Attack-2.png"
+rm -f "Attack-3.png"
+rm -f "Attack-4.png"
+rm -f "Attack-5.png"
+rm -f "Attack-6.png"
+rm -f "HeroAttackHitbox-1.png"
+rm -f "Hit-1.png"
+rm -f "Idle-1.png"
+rm -f "Idle-2.png"
+rm -f "Idle-3.png"
+rm -f "Idle-4.png"
+rm -f "Jump-1.png"
+rm -f "Jump-2.png"
+rm -f "Jump-3.png"
+rm -f "Jump-4.png"
+rm -f "Run-1.png"
+rm -f "Run-2.png"
+rm -f "Run-3.png"
+rm -f "Run-4.png"
+rm -f "Run-5.png"
+rm -f "Run-6.png"
+
+echo "22 arquivos obsoletos removidos."
