@@ -217,6 +217,67 @@
     }
   }
 
+  // ------------------------------------------------- menu por toque
+  // O controle na tela so aparece nas fases, entao no titulo o celular ficava
+  // sem nenhuma forma de apertar START GAME — o jogo era injogavel no telefone.
+  // Aqui um toque sobre o item move o seletor ate ele e injeta a tecla de
+  // confirmar, reusando a propria logica de menu do jogo.
+  var confirmar = 0;
+
+  function toqueNoMenu(scene, clientX, clientY) {
+    var c = document.querySelector('canvas');
+    if (!c) return;
+    var r = c.getBoundingClientRect();
+    var layer = scene.getLayer('');
+    // tela -> mundo, respeitando a escala e o recorte do canvas
+    var px = (clientX - r.left) / r.width * scene.getGame().getGameResolutionWidth();
+    var py = (clientY - r.top) / r.height * scene.getGame().getGameResolutionHeight();
+    // convertCoords e' tela->cena; convertInverseCoords faz o contrario
+    var pos = [0, 0];
+    layer.convertCoords(px, py, 0, pos);
+
+    var nomes = ['BitmapMenuStart', 'BitmapMenuExit', 'BitmapMenuCredits'];
+    for (var n = 0; n < nomes.length; n++) {
+      var objs = scene.getObjects(nomes[n]);
+      for (var i = 0; i < objs.length; i++) {
+        var o = objs[i];
+        var folga = 24;                       // alvo generoso para o dedo
+        if (pos[0] >= o.getX() - folga && pos[0] <= o.getX() + o.getWidth() + folga &&
+            pos[1] >= o.getY() - folga && pos[1] <= o.getY() + o.getHeight() + folga) {
+          var sel = scene.getObjects('MenuSelector')[0];
+          if (sel) sel.setY(o.getY() - 16);   // mesma formula que o jogo usa
+          confirmar = 12;                     // quadros injetando a confirmacao
+          return;
+        }
+      }
+    }
+  }
+
+  function menuTactil(scene) {
+    if (scene.getName() !== 'Title') { confirmar = 0; return; }
+    var im = scene.getGame().getInputManager();
+    var nome = game.getVariables().getFromIndex(G.attack).getAsString();
+    var cod = gdjs.evtTools.input.keysNameToCode[nome];
+    if (cod === undefined) return;
+    if (confirmar > 0) { confirmar--; im.onKeyPressed(cod, 0); }
+    else if (confirmar === 0) { im.onKeyReleased(cod, 0); confirmar = -1; }
+  }
+
+  addEventListener('touchstart', function (e) {
+    if (!game || document.getElementById('dg-controls')) return;
+    var s = game.getSceneStack().getCurrentScene();
+    if (!s || s.getName() !== 'Title') return;
+    var t = e.changedTouches[0];
+    if (t) toqueNoMenu(s, t.clientX, t.clientY);
+  }, { passive: true });
+
+  addEventListener('click', function (e) {
+    if (!game || document.getElementById('dg-controls')) return;
+    var s = game.getSceneStack().getCurrentScene();
+    if (!s || s.getName() !== 'Title') return;
+    toqueNoMenu(s, e.clientX, e.clientY);
+  });
+
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
     game = scene.getGame();
   });
@@ -224,6 +285,7 @@
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
     if (!game) game = scene.getGame();
     if (deveMostrar(scene)) montar(); else desmontar();
+    menuTactil(scene);
     bombear(scene);
   });
 
