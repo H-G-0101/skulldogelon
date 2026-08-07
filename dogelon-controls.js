@@ -255,6 +255,23 @@
     }
   }
 
+  // -------------------------------------------- moldura do menu (2 itens)
+  // O code0.js centra a moldura na coordenada Y do item DO MEIO — que era o
+  // CREDITS. Com o menu reduzido a dois itens essa expressao cai em 0 e o
+  // painel salta para o topo da tela. Aqui ele e' reposicionado a cada quadro
+  // a partir dos itens que sobraram.
+  function frameMenu(scene) {
+    var border = scene.getObjects('MenuBorder')[0];
+    var a = scene.getObjects('BitmapMenuStart')[0];
+    var b = scene.getObjects('BitmapMenuExit')[0];
+    if (!border || !a || !b) return;
+    var top = Math.min(a.getY(), b.getY());
+    var bottom = Math.max(a.getY() + a.getHeight(), b.getY() + b.getHeight());
+    var midY = (top + bottom) / 2;
+    border.setPosition(a.getX() + a.getWidth() / 2 - border.getWidth() / 2,
+                       midY - border.getHeight() / 2);
+  }
+
   // ----------------------------------------------------------- ligacao
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
     game = scene.getGame();
@@ -280,6 +297,7 @@
       return;
     }
     if (scene.getName() !== 'Title') return;
+    frameMenu(scene);
 
     // Qual item esta selecionado agora. O item de CONTROLS e' o antigo
     // BitmapMenuExit reaproveitado, entao ele e' localizado pela Action e
