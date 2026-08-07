@@ -84,6 +84,22 @@ Dois casos que precisaram de tratamento:
   extrair a linha da superfície dali, e rasterizar gera lixo. Esses são
   detectados e tratados à parte.
 
+## Tela de CONTROLES: o fade genérico do título
+
+O item de CONTROLES é o antigo EXIT GAME reaproveitado. Isso foi necessário
+porque o `code0.js` compilado só procura o próximo item do menu dentro de
+listas fixas dos três objetos originais — um objeto novo nunca é encontrado e
+o seletor trava. E EXIT GAME não servia em navegador: a ação chamava
+`stopGame`, que deixa a tela preta.
+
+Só que **o fade da tela de título é genérico**. Qualquer confirmação dispara
+o tween `FadeOut` (500 ms) e só *depois* o jogo olha a `Action` para decidir o
+que fazer. Como `Action="Controls"` não bate com Start/Credits/Exit, nada
+acontece depois do fade — e o fundo fica preto para sempre.
+
+Por isso o `dogelon-controls.js` cancela o fade a cada quadro enquanto o modal
+está aberto (`removeTween('FadeOut')` + opacidade 0), e mais uma vez ao fechar.
+
 ## Armadilha do createObject: zOrder
 
 Objetos criados em tempo de execução nascem com **zOrder 0**, e o `LevelMap`
