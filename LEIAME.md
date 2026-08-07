@@ -60,6 +60,15 @@ servidor local para testar:
   no `data.js` (é a mesma chave que o editor mexe). Ver nota de licença abaixo.
 - Tela de título, textos de controle e nome do projeto atualizados.
 
+## Armadilha do createObject: zOrder
+
+Objetos criados em tempo de execução nascem com **zOrder 0**, e o `LevelMap`
+fica em z=1. Sem definir o z na criação, o tiro passa *por trás* das paredes
+e só reaparece depois do cenário. O `dogelon-blast.js` calcula o valor uma vez
+ao carregar a cena — o maior z da camada base (mapa, herói, inimigos, chefe)
+mais 10 — em vez de cravar um número. O código original faz o mesmo com o
+`EnemyDeathFire`, copiando o z do inimigo.
+
 ## Se for editar o splash
 
 O renderer do GDevelop escala o fundo em modo **cover** (`Math.max` entre as
