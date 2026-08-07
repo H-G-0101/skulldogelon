@@ -1,6 +1,5 @@
 #!/bin/sh
 # PNGs do heroi antigo, nao referenciados mais pelo data.js.
-# Rode na raiz do repo DEPOIS de copiar os arquivos novos por cima.
 
 rm -f "Attack-1.png"
 rm -f "Attack-2.png"
