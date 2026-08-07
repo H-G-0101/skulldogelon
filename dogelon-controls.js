@@ -116,7 +116,12 @@
       '#dg-controls td{padding:5px 4px;border-bottom:1px solid #28324a;}',
       '#dg-controls td.k{text-align:right;color:#f0c878;letter-spacing:1px;}',
       '#dg-controls .foot{margin-top:12px;font-size:11px;color:#8b97ad;}',
-      '#dg-controls .ok{color:#6fd08c;}'
+      '#dg-controls .ok{color:#6fd08c;}',
+      '#dg-controls .toque{margin-top:12px;padding-top:10px;',
+      'border-top:1px solid #28324a;font-size:11px;color:#8b97ad;}',
+      '#dg-controls .toque .op{display:inline-block;padding:4px 9px;margin-right:5px;',
+      'border:2px solid #3c465c;background:#111725;cursor:pointer;color:#8b97ad;}',
+      '#dg-controls .toque .op.on{border-color:#f0c878;background:#f0c878;color:#171d2a;}'
     ].join('');
     document.head.appendChild(st);
   }
@@ -154,12 +159,19 @@
       (viewing === current ? ' <span class="ok">— em uso</span>' : '') +
       '</div><table>' + rows +
       '<tr><td>Menu</td><td class="k">SETAS ou ' + menuKey + '</td></tr>' +
-      '</table><div class="foot">Clique num preset pra usar. ' +
+      '</table>' + linhaToque() +
+      '<div class="foot">Clique num preset pra usar. ' +
       'Fechar no X do canto.</div></div>';
 
     overlay.querySelector('.x').onclick = close;
     Array.prototype.forEach.call(overlay.querySelectorAll('.tab'), function (el) {
       el.onclick = function () { viewing = +el.dataset.i; apply(viewing); render(); };
+    });
+    Array.prototype.forEach.call(overlay.querySelectorAll('.op'), function (el) {
+      el.onclick = function () {
+        try { localStorage.setItem(TOUCH_STORE, el.dataset.t); } catch (e) { /* ok */ }
+        render();
+      };
     });
   }
 
@@ -175,6 +187,27 @@
       if (tw && tw.exists('FadeOut')) tw.removeTween('FadeOut');
       list[i].setOpacity(0);
     }
+  }
+
+  // ------------------------------------------------- controle de toque
+  var TOUCH_STORE = 'dogelonmars.touch';
+  var TOUCH_OPS = [['auto', 'AUTOMATICO'], ['on', 'SEMPRE'], ['off', 'DESLIGADO']];
+
+  function toqueModo() {
+    try { return localStorage.getItem(TOUCH_STORE) || 'auto'; } catch (e) { return 'auto'; }
+  }
+
+  function linhaToque() {
+    var m = toqueModo();
+    var ops = TOUCH_OPS.map(function (o) {
+      return '<span class="op' + (o[0] === m ? ' on' : '') +
+             '" data-t="' + o[0] + '">' + o[1] + '</span>';
+    }).join('');
+    var detectado = (window.__dgTouch && window.__dgTouch.temToque())
+      ? 'toque detectado neste aparelho' : 'sem toque: teclado';
+    return '<div class="toque">Controle na tela (celular): ' + ops +
+           '<br>No automatico aparece so em aparelho com toque — ' + detectado +
+           '.</div>';
   }
 
   function open() {
