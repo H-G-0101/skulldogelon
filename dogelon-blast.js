@@ -47,8 +47,12 @@
   // aqui os frames sao controlados na mao. Usar setAnimationFrame em vez de
   // deixar o animator rodar sozinho evita que os eventos, que rodam ANTES
   // deste callback, reiniciem a animacao do zero a cada frame.
-  var DEAD_FRAMES = 18, DEAD_TBF = 0.09;
-  var RESP_FRAMES = 21, RESP_TBF = 0.06;
+  // Contagem por QUADRO, nao por tempo decorrido: se o jogo escalar o tempo
+  // para zero (fade de morte, pausa), getElapsedTime devolve 0, o contador
+  // nunca avanca e o respawn ficaria preso para sempre.
+  var DEAD_FRAMES = 18, DEAD_EVERY = 5;     // ~18 x 5 = 90 quadros
+  var RESP_FRAMES = 21, RESP_EVERY = 4;     // ~21 x 4 = 84 quadros
+  var RESP_CAP = 90;                        // trava de seguranca, em quadros
 
   // ---------------------------------------------------------------- helpers
   // Fase 1 e fase 2 rodam o mesmo codigo de eventos (code1/code4), entao tudo
@@ -134,11 +138,11 @@
   });
 
   // Toca uma animacao quadro a quadro, sem depender do animator interno.
-  function drive(hero, name, t, tbf, count) {
+  function drive(hero, name, ticks, every, count) {
     if (hero.getBehavior('Animation').getAnimationName() !== name) {
       hero.setAnimationName(name);
     }
-    var idx = Math.floor(t / tbf);
+    var idx = Math.floor(ticks / every);
     if (idx > count - 1) idx = count - 1;
     hero.setAnimationFrame(idx);
     return idx >= count - 1;
@@ -157,22 +161,30 @@
 
       if (fsm === 'Death') {
         scene.__respawning = false;
-        scene.__deadT = (scene.__deadT || 0) + dt;
-        drive(hero, 'Dead', scene.__deadT, DEAD_TBF, DEAD_FRAMES);
-        return;                       // nada de tiro/movimento enquanto morre
+        scene.__deadT = (scene.__deadT || 0) + 1;
+        drive(hero, 'Dead', scene.__deadT, DEAD_EVERY, DEAD_FRAMES);
+        return;                       // o heroi esta morto; nada a fazer
       }
       scene.__deadT = 0;
 
       if (scene.__respawning) {
-        // O heroi nasce no ar e cai ate o chao, entao Fall/Air fazem parte da
-        // chegada. So input de verdade do jogador cancela o feixe — nunca
-        // prender o controle.
-        var acted = (fsm === 'Run' || fsm === 'Jump' || fsm === 'Attack' ||
-                     fsm === 'Dash' || fsm === 'Hit');
-        scene.__respawnT += dt;
-        var over = drive(hero, 'Respawn', scene.__respawnT, RESP_TBF, RESP_FRAMES);
-        if (over || acted) scene.__respawning = false;
-        if (!acted) return;
+        // O feixe de respawn e' PURAMENTE visual e dura so a queda ate o chao.
+        // Versoes anteriores prendiam a animacao por tempo e travavam o
+        // jogador: sem controle, sem tiro, so as pernas paradas. Agora ele sai
+        // de cena por tres caminhos independentes — o que vier primeiro.
+        var hb = scene.getObjects('HeroHitbox')[0];
+        var noChao = hb && hb.getBehavior('PlatformerObject').isOnFloor();
+        var agiu = (fsm !== 'Idle' && fsm !== 'IDLE' && fsm !== 'Init' &&
+                    fsm !== 'InitState' && fsm !== 'Fall' && fsm !== 'Air');
+        scene.__respawnT = (scene.__respawnT || 0) + 1;
+
+        if (agiu || noChao || scene.__respawnT > RESP_CAP) {
+          scene.__respawning = false;   // 1) jogador agiu  2) pousou  3) trava
+        } else {
+          drive(hero, 'Respawn', scene.__respawnT, RESP_EVERY, RESP_FRAMES);
+        }
+        // Sem "return": prender o fluxo aqui bloqueava o tiro, e qualquer
+        // travamento do contador congelava o jogador de vez.
       }
     }
 

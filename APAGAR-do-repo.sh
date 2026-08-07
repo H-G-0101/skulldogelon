@@ -1,5 +1,5 @@
 #!/bin/sh
-# PNGs do heroi antigo, e o code4.js (o clone da fase 2 foi abandonado).
+# PNGs do heroi antigo + code4.js (o clone da fase 2 foi abandonado).
 
 rm -f "Attack-1.png"
 rm -f "Attack-2.png"
