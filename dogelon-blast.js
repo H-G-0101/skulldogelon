@@ -17,6 +17,27 @@
 (function () {
   'use strict';
 
+  // ------------------------------------------- encadeamento das duas fases
+  // As duas fases rodam o MESMO codigo de eventos (o layout "Stage 2" usa
+  // mangledName "Stage"). Clonar o code1.js trocando o namespace por string
+  // nao funcionou: o clone acabava sendo executado tambem pela fase 1, e
+  // morrer na fase 1 mandava o jogador para a fase 2.
+  //
+  // Com o codigo compartilhado, o destino e' decidido aqui, pela cena que
+  // esta rodando no momento:
+  //   fase 1  morrer -> fase 1     vencer -> fase 2
+  //   fase 2  morrer -> fase 2     vencer -> tela de vitoria
+  (function routeScenes() {
+    var rt = gdjs.evtTools.runtimeScene;
+    var original = rt.replaceScene;
+    rt.replaceScene = function (scene, target, clear) {
+      var from = scene.getName();
+      if (from === 'Stage' && target === 'WinScreen') target = 'Stage 2';
+      else if (from === 'Stage 2' && target === 'Stage') target = 'Stage 2';
+      return original.call(this, scene, target, clear);
+    };
+  })();
+
   var SPEED = 1400;   // unidades/seg
   var RANGE = 1600;   // alcance maximo antes de sumir
   var ENEMIES = ['Skeleton', 'Ghost', 'Wolf', 'BossSkull'];

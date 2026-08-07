@@ -1,5 +1,5 @@
 #!/bin/sh
-# PNGs do heroi antigo, nao referenciados mais pelo data.js.
+# PNGs do heroi antigo, e o code4.js (o clone da fase 2 foi abandonado).
 
 rm -f "Attack-1.png"
 rm -f "Attack-2.png"
@@ -23,5 +23,6 @@ rm -f "Run-3.png"
 rm -f "Run-4.png"
 rm -f "Run-5.png"
 rm -f "Run-6.png"
+rm -f "code4.js"
 
-echo "22 arquivos obsoletos removidos."
+echo "arquivos obsoletos removidos."
