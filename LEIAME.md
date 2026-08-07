@@ -60,6 +60,30 @@ servidor local para testar:
   no `data.js` (é a mesma chave que o editor mexe). Ver nota de licença abaixo.
 - Tela de título, textos de controle e nome do projeto atualizados.
 
+## Rampas: arte gerada a partir da colisão
+
+As rampas não usam um tile de diagonal pronto. Cada célula do nível tem
+inclinação própria, descrita no seu polígono de colisão — uma sobe 8px em 16,
+outra desce 6px em 12. Reaproveitar um único diagonal genérico faz as células
+não emendarem e a rampa vira degrau.
+
+Então `fix_slopes.py` **desenha** cada tile de rampa: rasteriza o polígono,
+usa a superfície real como linha de arte, e aplica faixa de perigo em cima e
+pedra embaixo — ambas amostradas do próprio tileset da Foozle, para o material
+continuar o mesmo. A faixa preta/âmbar tem período 8px e os tiles têm 16px,
+então a fase casa sozinha entre células vizinhas.
+
+Dois casos que precisaram de tratamento:
+
+- **Tiles enterrados.** Numa rampa de duas células de altura, a de baixo
+  também tem topo inclinado. Se ganhar faixa de perigo, aparece uma listra
+  amarela flutuando dentro da rocha. Mede-se no mapa a frequência de sólido
+  logo acima; passando de 50%, o tile vira rocha lisa.
+- **Polígonos fora da célula.** Quatro tiles trazem a colisão deslocada para
+  x de 16 a 32 — ou seja, ela mora na célula vizinha da direita. Não dá para
+  extrair a linha da superfície dali, e rasterizar gera lixo. Esses são
+  detectados e tratados à parte.
+
 ## Armadilha do createObject: zOrder
 
 Objetos criados em tempo de execução nascem com **zOrder 0**, e o `LevelMap`
