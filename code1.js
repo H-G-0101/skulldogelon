@@ -7662,7 +7662,7 @@ isConditionTrue_0 = false;
 }
 }
 if (isConditionTrue_0) {
-{gdjs.evtTools.runtimeScene.replaceScene(runtimeScene, "WinScreen", false);
+{gdjs.evtTools.runtimeScene.replaceScene(runtimeScene, "Stage 2", false);
 }
 }
 

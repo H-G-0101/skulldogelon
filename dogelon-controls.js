@@ -163,6 +163,20 @@
     });
   }
 
+  // O fade da tela de titulo e' GENERICO: qualquer confirmacao dispara o
+  // tween "FadeOut" (500ms) e so depois o jogo olha a Action para decidir o
+  // que fazer. Como Action="Controls" nao bate com Start/Credits/Exit, nada
+  // acontece depois — e a tela fica preta para sempre. Entao, enquanto o
+  // modal esta aberto, o fade e' cancelado a cada quadro.
+  function killFade(scene) {
+    var list = scene.getObjects('FadeObject');
+    for (var i = 0; i < list.length; i++) {
+      var tw = list[i].getBehavior('Tween');
+      if (tw && tw.exists('FadeOut')) tw.removeTween('FadeOut');
+      list[i].setOpacity(0);
+    }
+  }
+
   function open() {
     if (overlay) return;
     css();
@@ -183,6 +197,10 @@
     removeEventListener('resize', place);
     overlay.remove();
     overlay = null;
+    if (game) {
+      var sc = game.getSceneStack().getCurrentScene();
+      if (sc) killFade(sc);            // o fade nao pode sobreviver ao modal
+    }
   }
 
   function onKey(e) {
@@ -258,6 +276,7 @@
       // chaves da tabela e o menu do titulo para de responder depois que o
       // modal fecha. O primeiro so marca tudo como solto, que e' o correto.
       scene.getGame().getInputManager().releaseAllPressedKeys();
+      killFade(scene);
       return;
     }
     if (scene.getName() !== 'Title') return;

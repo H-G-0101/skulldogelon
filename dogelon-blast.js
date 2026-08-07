@@ -30,6 +30,13 @@
   var RESP_FRAMES = 21, RESP_TBF = 0.06;
 
   // ---------------------------------------------------------------- helpers
+  // Fase 1 e fase 2 rodam o mesmo codigo de eventos (code1/code4), entao tudo
+  // aqui vale para as duas.
+  function isStage(scene) {
+    var n = scene.getName();
+    return n === 'Stage' || n === 'Stage 2';
+  }
+
   function heroOf(scene) {
     var h = scene.getObjects('Hero');
     return h && h.length ? h[0] : null;
@@ -78,7 +85,7 @@
   }
 
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
-    if (scene.getName() !== 'Stage') return;
+    if (!isStage(scene)) return;
     neutralise();
     // Toda entrada na fase (inicio ou apos morrer) comeca com o Dogelon
     // se materializando no feixe de luz.
@@ -118,7 +125,7 @@
 
   // ------------------------------------------------------------- loop/frame
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
-    if (scene.getName() !== 'Stage') return;
+    if (!isStage(scene)) return;
 
     var hero = heroOf(scene);
     var dt = scene.getElapsedTime() / 1000;
