@@ -54,6 +54,52 @@
   var RESP_FRAMES = 21, RESP_EVERY = 4;     // ~21 x 4 = 84 quadros
   var RESP_CAP = 90;                        // trava de seguranca, em quadros
 
+  // ------------------------------------------- inimigo preso contra parede
+  // Os marcadores Left/Right so cobrem as pontas das plataformas. Quando um
+  // degrau sobe no meio do caminho, o inimigo anda contra a face vertical e
+  // fica patinando ali para sempre.
+  //
+  // Em vez de tentar adivinhar a geometria, aqui a deteccao e' por resultado:
+  // se ele deveria estar andando e o X praticamente nao muda por meio segundo,
+  // esta preso — e a direcao se inverte. Funciona com parede, com quina e com
+  // qualquer formato de terreno, sem depender de marcador nenhum.
+  var PRESO_QUADROS = 30;        // ~0,5 s a 60 Hz
+  var PRESO_MARGEM = 2;          // unidades de mundo
+
+  function destravar(scene) {
+    var listas = ['Skeleton', 'Wolf'];
+    for (var l = 0; l < listas.length; l++) {
+      var objs = scene.getObjects(listas[l]);
+      for (var i = 0; i < objs.length; i++) {
+        var e = objs[i];
+        var x = e.getX();
+        if (e.__ultX === undefined) { e.__ultX = x; e.__parado = 0; continue; }
+
+        var noChao = true;
+        var pb = e.getBehavior('PlatformerObject');
+        if (pb) noChao = pb.isOnFloor();      // no ar ele nao esta preso, esta caindo
+
+        if (noChao && Math.abs(x - e.__ultX) < PRESO_MARGEM) e.__parado++;
+        else e.__parado = 0;
+        e.__ultX = x;
+
+        if (e.__parado < PRESO_QUADROS) continue;
+        e.__parado = 0;
+
+        var v = e.getVariables();
+        if (v.has('Direction')) {
+          // o esqueleto anda seguindo essa variavel; o jogo cuida do resto
+          var dir = v.get('Direction').getAsString();
+          v.get('Direction').setString(dir === 'Left' ? 'Right' : 'Left');
+        }
+        var fb = e.getBehavior('Flippable');
+        if (fb) fb.flipX(!fb.isFlippedX());
+        // empurrao minimo para descolar da parede antes de recomecar
+        e.setX(x + (fb && fb.isFlippedX() ? -4 : 4));
+      }
+    }
+  }
+
   // ---------------------------------------------------------------- helpers
   // Fase 1 e fase 2 rodam o mesmo codigo de eventos (code1/code4), entao tudo
   // aqui vale para as duas.
@@ -151,6 +197,8 @@
   // ------------------------------------------------------------- loop/frame
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
     if (!isStage(scene)) return;
+
+    destravar(scene);
 
     var hero = heroOf(scene);
     var dt = scene.getElapsedTime() / 1000;
