@@ -75,7 +75,7 @@
   // fracao de segundo; se a janela for curta, meu giro cai junto com o do
   // marcador, os dois se somam e o inimigo sai andando pela borda — foi assim
   // que a caveira caiu no precipicio da fase 1.
-  var JANELA = { Skeleton: 180, Wolf: 240 };  // quadros (~3 s e ~4 s)
+  var JANELA = { Skeleton: 120, Wolf: 240 };  // quadros (~2 s e ~4 s)
   var AVANCO_MIN = 48;                        // unidades no periodo
 
   // O inimigo esta em contato com um marcador de virada do proprio jogo?
@@ -103,11 +103,19 @@
           continue;
         }
 
-        // Encostado num marcador de virada, quem manda e' o jogo. Interferir
-        // aqui soma dois giros e joga o inimigo fora da plataforma.
+        // Encostado num marcador, normalmente quem manda e' o jogo: interferir
+        // soma dois giros e joga o inimigo fora da plataforma. MAS se ele fica
+        // parado ali por muito tempo, o marcador claramente nao esta
+        // resolvendo — ele esta prensado entre o marcador e uma parede. Nesse
+        // caso o desempate vem daqui, depois do dobro da janela.
         if (noMarcador(scene, e)) {
-          e.__ancora = x; e.__janela = 0;
-          continue;
+          e.__noMarc = (e.__noMarc || 0) + 1;
+          if (e.__noMarc < JANELA[nome] * 2) {
+            e.__ancora = x; e.__janela = 0;
+            continue;
+          }
+        } else {
+          e.__noMarc = 0;
         }
         if (e.__ancora === undefined) { e.__ancora = x; e.__janela = 0; continue; }
 
@@ -117,7 +125,8 @@
         var avancou = Math.abs(x - e.__ancora);
         e.__ancora = x;
         e.__janela = 0;
-        if (avancou >= AVANCO_MIN) continue;   // esta andando: nao mexer
+        if (avancou >= AVANCO_MIN) { e.__noMarc = 0; continue; }   // andando: nao mexer
+        e.__noMarc = 0;
 
         var v = e.getVariables();
         if (v.has('Direction')) {
@@ -129,12 +138,15 @@
           v.get('Direction').setString(novo);
           var fe = e.getBehavior('Flippable');
           // Convencao do projeto, medida em jogo: Direction "Right" anda junto
-          // com flipX LIGADO (a arte nasce virada para a esquerda). Eu tinha
-          // assumido o contrario, e o espelhamento saia ao contrario do rumo.
+          // com flipX LIGADO (a arte nasce virada para a esquerda).
           if (fe) fe.flipX(novo === 'Right');
+          e.setX(x + (novo === 'Right' ? recuo : -recuo));
         } else {
           var fb = e.getBehavior('Flippable');
-          if (fb) fb.flipX(!fb.isFlippedX());
+          if (fb) {
+            fb.flipX(!fb.isFlippedX());
+            e.setX(x + (fb.isFlippedX() ? recuo : -recuo));
+          }
         }
       }
     }
