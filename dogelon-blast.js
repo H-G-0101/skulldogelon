@@ -71,8 +71,24 @@
   // Agora a medicao e' por JANELA: guarda-se a posicao no inicio e, ao fim da
   // janela, ve-se o quanto ele realmente avancou. Quem anda percorre dezenas
   // de unidades; quem esta contra a parede fica na casa de zero.
-  var JANELA = { Skeleton: 45, Wolf: 150 };   // quadros
-  var AVANCO_MIN = 32;                        // unidades no periodo
+  // Janelas longas de proposito. A virada nos marcadores Left/Right dura uma
+  // fracao de segundo; se a janela for curta, meu giro cai junto com o do
+  // marcador, os dois se somam e o inimigo sai andando pela borda — foi assim
+  // que a caveira caiu no precipicio da fase 1.
+  var JANELA = { Skeleton: 180, Wolf: 240 };  // quadros (~3 s e ~4 s)
+  var AVANCO_MIN = 48;                        // unidades no periodo
+
+  // O inimigo esta em contato com um marcador de virada do proprio jogo?
+  function noMarcador(scene, e) {
+    var listas = ['Left', 'Right'];
+    for (var l = 0; l < listas.length; l++) {
+      var ms = scene.getObjects(listas[l]);
+      for (var i = 0; i < ms.length; i++) {
+        if (gdjs.RuntimeObject.collisionTest(e, ms[i], false)) return true;
+      }
+    }
+    return false;
+  }
 
   function destravar(scene) {
     for (var nome in JANELA) {
@@ -83,6 +99,13 @@
 
         var pb = e.getBehavior('PlatformerObject');
         if (pb && !pb.isOnFloor()) {          // no ar ele esta caindo, nao preso
+          e.__ancora = x; e.__janela = 0;
+          continue;
+        }
+
+        // Encostado num marcador de virada, quem manda e' o jogo. Interferir
+        // aqui soma dois giros e joga o inimigo fora da plataforma.
+        if (noMarcador(scene, e)) {
           e.__ancora = x; e.__janela = 0;
           continue;
         }
