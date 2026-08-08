@@ -288,21 +288,27 @@
 
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
     game = scene.getGame();
-    // O modo scaleOuter so era aplicado depois da primeira troca de cena: no
-    // titulo o canvas ficava no tamanho original e sobrava faixa cinza ao lado.
-    // Reaplicar o modo forca o recalculo na hora.
-    try {
-      game.setGameResolutionResizeMode(game.getGameResolutionResizeMode());
-    } catch (e) { /* runtime antigo: ignora */ }
+    ajustarTela();
   });
 
+  // O canvas so preenche a pagina inteira quando o renderer NAO esta mantendo
+  // proporcao. Com keepRatio ligado (o padrao) ele sempre encaixa dentro da
+  // janela e sobra faixa cinza na lateral — era isso na tela de titulo.
+  // Desligar e' seguro aqui porque o modo scaleOuter ja ajusta a RESOLUCAO a
+  // proporcao da tela: o canvas preenche sem esticar a imagem.
+  function ajustarTela() {
+    if (!game) return;
+    try {
+      game.setGameResolutionResizeMode(game.getGameResolutionResizeMode());
+      var r = game.getRenderer();
+      if (r && r.keepAspectRatio) r.keepAspectRatio(false);
+    } catch (e) { /* runtime diferente: ignora */ }
+    posicionar();
+  }
+
   // a barra do navegador aparece e some no celular, mudando a altura util
-  addEventListener('orientationchange', function () {
-    setTimeout(function () {
-      if (game) game.setGameResolutionResizeMode(game.getGameResolutionResizeMode());
-      posicionar();
-    }, 250);
-  });
+  addEventListener('orientationchange', function () { setTimeout(ajustarTela, 250); });
+  addEventListener('resize', function () { setTimeout(ajustarTela, 60); });
 
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
     if (!game) game = scene.getGame();
