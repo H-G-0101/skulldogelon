@@ -63,39 +63,49 @@
   // se ele deveria estar andando e o X praticamente nao muda por meio segundo,
   // esta preso — e a direcao se inverte. Funciona com parede, com quina e com
   // qualquer formato de terreno, sem depender de marcador nenhum.
-  var PRESO_QUADROS = 30;        // ~0,5 s a 60 Hz
-  var PRESO_MARGEM = 2;          // unidades de mundo
+  // Medir quadro a quadro nao serve: o esqueleto anda a 2,48 unidades por
+  // quadro e o limiar anterior era 2 — qualquer titubeada contava como
+  // "preso", ele virava, andava de volta, virava de novo. Era o passo pra
+  // frente e pra tras.
+  //
+  // Agora a medicao e' por JANELA: guarda-se a posicao no inicio e, ao fim da
+  // janela, ve-se o quanto ele realmente avancou. Quem anda percorre dezenas
+  // de unidades; quem esta contra a parede fica na casa de zero.
+  var JANELA = { Skeleton: 45, Wolf: 150 };   // quadros
+  var AVANCO_MIN = 32;                        // unidades no periodo
 
   function destravar(scene) {
-    var listas = ['Skeleton', 'Wolf'];
-    for (var l = 0; l < listas.length; l++) {
-      var objs = scene.getObjects(listas[l]);
+    for (var nome in JANELA) {
+      var objs = scene.getObjects(nome);
       for (var i = 0; i < objs.length; i++) {
         var e = objs[i];
         var x = e.getX();
-        if (e.__ultX === undefined) { e.__ultX = x; e.__parado = 0; continue; }
 
-        var noChao = true;
         var pb = e.getBehavior('PlatformerObject');
-        if (pb) noChao = pb.isOnFloor();      // no ar ele nao esta preso, esta caindo
+        if (pb && !pb.isOnFloor()) {          // no ar ele esta caindo, nao preso
+          e.__ancora = x; e.__janela = 0;
+          continue;
+        }
+        if (e.__ancora === undefined) { e.__ancora = x; e.__janela = 0; continue; }
 
-        if (noChao && Math.abs(x - e.__ultX) < PRESO_MARGEM) e.__parado++;
-        else e.__parado = 0;
-        e.__ultX = x;
+        e.__janela++;
+        if (e.__janela < JANELA[nome]) continue;
 
-        if (e.__parado < PRESO_QUADROS) continue;
-        e.__parado = 0;
+        var avancou = Math.abs(x - e.__ancora);
+        e.__ancora = x;
+        e.__janela = 0;
+        if (avancou >= AVANCO_MIN) continue;   // esta andando: nao mexer
 
         var v = e.getVariables();
         if (v.has('Direction')) {
-          // o esqueleto anda seguindo essa variavel; o jogo cuida do resto
+          // O esqueleto anda por esta variavel e o jogo ja cuida do espelhamento.
+          // Virar o Flippable junto dessincronizava os dois.
           var dir = v.get('Direction').getAsString();
           v.get('Direction').setString(dir === 'Left' ? 'Right' : 'Left');
+        } else {
+          var fb = e.getBehavior('Flippable');
+          if (fb) fb.flipX(!fb.isFlippedX());
         }
-        var fb = e.getBehavior('Flippable');
-        if (fb) fb.flipX(!fb.isFlippedX());
-        // empurrao minimo para descolar da parede antes de recomecar
-        e.setX(x + (fb && fb.isFlippedX() ? -4 : 4));
       }
     }
   }
