@@ -98,10 +98,17 @@
 
         var v = e.getVariables();
         if (v.has('Direction')) {
-          // O esqueleto anda por esta variavel e o jogo ja cuida do espelhamento.
-          // Virar o Flippable junto dessincronizava os dois.
+          // O esqueleto anda por esta variavel. O espelhamento precisa ser
+          // AJUSTADO ao novo rumo, nao alternado: alternar dessincroniza, e nao
+          // mexer deixa ele andando de costas depois de virar.
           var dir = v.get('Direction').getAsString();
-          v.get('Direction').setString(dir === 'Left' ? 'Right' : 'Left');
+          var novo = (dir === 'Left') ? 'Right' : 'Left';
+          v.get('Direction').setString(novo);
+          var fe = e.getBehavior('Flippable');
+          // Convencao do projeto, medida em jogo: Direction "Right" anda junto
+          // com flipX LIGADO (a arte nasce virada para a esquerda). Eu tinha
+          // assumido o contrario, e o espelhamento saia ao contrario do rumo.
+          if (fe) fe.flipX(novo === 'Right');
         } else {
           var fb = e.getBehavior('Flippable');
           if (fb) fb.flipX(!fb.isFlippedX());
@@ -251,6 +258,21 @@
       var anim = hero.getBehavior('Animation').getAnimationName();
       if (anim === 'Attack' && hero.__prevAnim !== 'Attack') spawnBlast(scene, hero);
       hero.__prevAnim = anim;
+
+      // TIRO NO AR: a maquina de estados do heroi nao entra em "Attack" com ele
+      // fora do chao, entao a animacao nunca troca e o disparo acima nao
+      // acontece. No ar o tiro e' criado direto daqui, com um intervalo minimo
+      // para nao virar metralhadora.
+      var fsmAr = hero.getVariables().getFromIndex(0).getAsString();
+      var noAr = (fsmAr === 'Jump' || fsmAr === 'Fall' || fsmAr === 'Air');
+      var tecla = scene.getGame().getVariables().getFromIndex(12).getAsString();
+      var apertado = gdjs.evtTools.input.isKeyPressed(scene, tecla);
+      scene.__arCd = Math.max(0, (scene.__arCd || 0) - 1);
+      if (noAr && apertado && !scene.__arApertado && scene.__arCd === 0) {
+        spawnBlast(scene, hero);
+        scene.__arCd = 18;                  // ~0,3 s entre tiros aereos
+      }
+      scene.__arApertado = apertado;
     }
 
     // 2. move os projeteis, testa colisao e limpa
