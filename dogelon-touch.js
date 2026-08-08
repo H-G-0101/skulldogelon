@@ -246,6 +246,14 @@
             pos[1] >= o.getY() - folga && pos[1] <= o.getY() + o.getHeight() + folga) {
           var sel = scene.getObjects('MenuSelector')[0];
           if (sel) sel.setY(o.getY() - 16);   // mesma formula que o jogo usa
+
+          var acao = o.getVariables().get('Action').getAsString();
+          if (acao === 'Controls' && window.__dgControls) {
+            // Chamada direta: injetar a tecla aqui dispararia o fade do titulo,
+            // e se o modal nao abrisse no quadro certo a tela ficava preta.
+            window.__dgControls.abrir();
+            return;
+          }
           confirmar = 12;                     // quadros injetando a confirmacao
           return;
         }
@@ -280,6 +288,20 @@
 
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
     game = scene.getGame();
+    // O modo scaleOuter so era aplicado depois da primeira troca de cena: no
+    // titulo o canvas ficava no tamanho original e sobrava faixa cinza ao lado.
+    // Reaplicar o modo forca o recalculo na hora.
+    try {
+      game.setGameResolutionResizeMode(game.getGameResolutionResizeMode());
+    } catch (e) { /* runtime antigo: ignora */ }
+  });
+
+  // a barra do navegador aparece e some no celular, mudando a altura util
+  addEventListener('orientationchange', function () {
+    setTimeout(function () {
+      if (game) game.setGameResolutionResizeMode(game.getGameResolutionResizeMode());
+      posicionar();
+    }, 250);
   });
 
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {

@@ -306,6 +306,14 @@
   }
 
   // ----------------------------------------------------------- ligacao
+  // O toque no celular chama isto direto, em vez de injetar a tecla e torcer
+  // para a deteccao pegar. Injetar disparava o fade generico do titulo e, se o
+  // modal nao abrisse no quadro certo, a tela ficava preta para sempre.
+  window.__dgControls = {
+    abrir: function () { open(); },
+    aberto: function () { return !!overlay; }
+  };
+
   gdjs.registerRuntimeSceneLoadedCallback(function (scene) {
     game = scene.getGame();
     if (!game.__dgControlsRestored) {
