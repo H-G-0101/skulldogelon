@@ -36,7 +36,7 @@
   function deveMostrar(scene) {
     var m = modo();
     if (m === 'off') return false;
-    var jogando = scene.getName() === 'Stage' || scene.getName() === 'Stage 2';
+    var jogando = scene.getName() === 'Stage';
     if (!jogando) return false;
     return m === 'on' || temToque();
   }

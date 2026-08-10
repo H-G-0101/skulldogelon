@@ -56,6 +56,26 @@ gdjs.TitleCode.GDJumpAttackObjects2= [];
 gdjs.TitleCode.GDJumpAttackObjects3= [];
 gdjs.TitleCode.GDJumpAttackObjects4= [];
 gdjs.TitleCode.GDJumpAttackObjects5= [];
+gdjs.TitleCode.GDNewTiledSpriteObjects1= [];
+gdjs.TitleCode.GDNewTiledSpriteObjects2= [];
+gdjs.TitleCode.GDNewTiledSpriteObjects3= [];
+gdjs.TitleCode.GDNewTiledSpriteObjects4= [];
+gdjs.TitleCode.GDNewTiledSpriteObjects5= [];
+gdjs.TitleCode.GDNewTiledSprite2Objects1= [];
+gdjs.TitleCode.GDNewTiledSprite2Objects2= [];
+gdjs.TitleCode.GDNewTiledSprite2Objects3= [];
+gdjs.TitleCode.GDNewTiledSprite2Objects4= [];
+gdjs.TitleCode.GDNewTiledSprite2Objects5= [];
+gdjs.TitleCode.GDNewSpriteObjects1= [];
+gdjs.TitleCode.GDNewSpriteObjects2= [];
+gdjs.TitleCode.GDNewSpriteObjects3= [];
+gdjs.TitleCode.GDNewSpriteObjects4= [];
+gdjs.TitleCode.GDNewSpriteObjects5= [];
+gdjs.TitleCode.GDNewSprite2Objects1= [];
+gdjs.TitleCode.GDNewSprite2Objects2= [];
+gdjs.TitleCode.GDNewSprite2Objects3= [];
+gdjs.TitleCode.GDNewSprite2Objects4= [];
+gdjs.TitleCode.GDNewSprite2Objects5= [];
 
 
 gdjs.TitleCode.eventsList0 = function(runtimeScene) {
@@ -156,7 +176,7 @@ for (var i = 0, k = 0, l = gdjs.TitleCode.GDBitmapMenuStartObjects4.length;i<l;+
 gdjs.TitleCode.GDBitmapMenuStartObjects4.length = k;
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12908116);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12983012);
 }
 }
 }
@@ -231,7 +251,7 @@ for (var i = 0, k = 0, l = gdjs.TitleCode.GDBitmapMenuStartObjects3.length;i<l;+
 gdjs.TitleCode.GDBitmapMenuStartObjects3.length = k;
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12910428);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12985324);
 }
 }
 }
@@ -278,7 +298,7 @@ isConditionTrue_0 = false;
 isConditionTrue_0 = !(gdjs.evtTools.input.isKeyPressed(runtimeScene, runtimeScene.getGame().getVariables().getFromIndex(10).getAsString()));
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12905388);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12980284);
 }
 }
 }
@@ -337,7 +357,7 @@ isConditionTrue_0 = false;
 isConditionTrue_0 = gdjs.evtTools.object.hitBoxesCollisionTest(gdjs.TitleCode.mapOfGDgdjs_9546TitleCode_9546GDMenuSelectorObjects2Objects, gdjs.TitleCode.mapOfGDgdjs_9546TitleCode_9546GDBitmapMenuExitObjects2ObjectsGDgdjs_9546TitleCode_9546GDBitmapMenuCreditsObjects2ObjectsGDgdjs_9546TitleCode_9546GDBitmapMenuStartObjects2Objects, false, runtimeScene, false);
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12912476);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12987372);
 }
 }
 }
@@ -527,7 +547,7 @@ if(isConditionTrue_1) {
 }
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12915308);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12990204);
 }
 }
 }
@@ -568,7 +588,7 @@ isConditionTrue_0 = false;
 isConditionTrue_0 = gdjs.evtTools.object.hitBoxesCollisionTest(gdjs.TitleCode.mapOfGDgdjs_9546TitleCode_9546GDMenuSelectorObjects1Objects, gdjs.TitleCode.mapOfGDgdjs_9546TitleCode_9546GDBitmapMenuExitObjects1ObjectsGDgdjs_9546TitleCode_9546GDBitmapMenuCreditsObjects1ObjectsGDgdjs_9546TitleCode_9546GDBitmapMenuStartObjects1Objects, false, runtimeScene, false);
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12917452);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(12992348);
 }
 }
 }
@@ -722,6 +742,26 @@ gdjs.TitleCode.GDJumpAttackObjects2.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects3.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects4.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects5.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects1.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects2.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects3.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects4.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects5.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects1.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects2.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects3.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects4.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects5.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects1.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects2.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects3.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects4.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects5.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects1.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects2.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects3.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects4.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects5.length = 0;
 
 gdjs.TitleCode.eventsList6(runtimeScene);
 gdjs.TitleCode.GDBitmapTitleObjects1.length = 0;
@@ -779,6 +819,26 @@ gdjs.TitleCode.GDJumpAttackObjects2.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects3.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects4.length = 0;
 gdjs.TitleCode.GDJumpAttackObjects5.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects1.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects2.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects3.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects4.length = 0;
+gdjs.TitleCode.GDNewTiledSpriteObjects5.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects1.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects2.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects3.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects4.length = 0;
+gdjs.TitleCode.GDNewTiledSprite2Objects5.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects1.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects2.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects3.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects4.length = 0;
+gdjs.TitleCode.GDNewSpriteObjects5.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects1.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects2.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects3.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects4.length = 0;
+gdjs.TitleCode.GDNewSprite2Objects5.length = 0;
 
 
 return;

@@ -25,6 +25,15 @@ gdjs.WinScreenCode.GDNextStepsObjects3= [];
 gdjs.WinScreenCode.GDFadeObjectObjects1= [];
 gdjs.WinScreenCode.GDFadeObjectObjects2= [];
 gdjs.WinScreenCode.GDFadeObjectObjects3= [];
+gdjs.WinScreenCode.GDNewSpriteObjects1= [];
+gdjs.WinScreenCode.GDNewSpriteObjects2= [];
+gdjs.WinScreenCode.GDNewSpriteObjects3= [];
+gdjs.WinScreenCode.GDNewSprite2Objects1= [];
+gdjs.WinScreenCode.GDNewSprite2Objects2= [];
+gdjs.WinScreenCode.GDNewSprite2Objects3= [];
+gdjs.WinScreenCode.GDNewSprite3Objects1= [];
+gdjs.WinScreenCode.GDNewSprite3Objects2= [];
+gdjs.WinScreenCode.GDNewSprite3Objects3= [];
 
 
 gdjs.WinScreenCode.eventsList0 = function(runtimeScene) {
@@ -163,7 +172,7 @@ for (var i = 0, k = 0, l = gdjs.WinScreenCode.GDFadeObjectObjects1.length;i<l;++
 gdjs.WinScreenCode.GDFadeObjectObjects1.length = k;
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(13170396);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(13270444);
 }
 }
 }
@@ -199,7 +208,7 @@ if(isConditionTrue_1) {
 }
 if (isConditionTrue_0) {
 isConditionTrue_0 = false;
-{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(13172644);
+{isConditionTrue_0 = runtimeScene.getOnceTriggers().triggerOnce(13272692);
 }
 }
 if (isConditionTrue_0) {
@@ -227,6 +236,15 @@ gdjs.WinScreenCode.GDNextStepsObjects3.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects1.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects2.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects3.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects1.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects2.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects3.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects1.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects2.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects3.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects1.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects2.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects3.length = 0;
 
 gdjs.WinScreenCode.eventsList2(runtimeScene);
 gdjs.WinScreenCode.GDCongratsObjects1.length = 0;
@@ -241,6 +259,15 @@ gdjs.WinScreenCode.GDNextStepsObjects3.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects1.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects2.length = 0;
 gdjs.WinScreenCode.GDFadeObjectObjects3.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects1.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects2.length = 0;
+gdjs.WinScreenCode.GDNewSpriteObjects3.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects1.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects2.length = 0;
+gdjs.WinScreenCode.GDNewSprite2Objects3.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects1.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects2.length = 0;
+gdjs.WinScreenCode.GDNewSprite3Objects3.length = 0;
 
 
 return;

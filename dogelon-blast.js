@@ -17,147 +17,29 @@
 (function () {
   'use strict';
 
-  // ------------------------------------------- encadeamento das duas fases
-  // As duas fases rodam o MESMO codigo de eventos (o layout "Stage 2" usa
-  // mangledName "Stage"). Clonar o code1.js trocando o namespace por string
-  // nao funcionou: o clone acabava sendo executado tambem pela fase 1, e
-  // morrer na fase 1 mandava o jogador para a fase 2.
-  //
-  // Com o codigo compartilhado, o destino e' decidido aqui, pela cena que
-  // esta rodando no momento:
-  //   fase 1  morrer -> fase 1     vencer -> fase 2
-  //   fase 2  morrer -> fase 2     vencer -> tela de vitoria
-  (function routeScenes() {
-    var rt = gdjs.evtTools.runtimeScene;
-    var original = rt.replaceScene;
-    rt.replaceScene = function (scene, target, clear) {
-      var from = scene.getName();
-      if (from === 'Stage' && target === 'WinScreen') target = 'Stage 2';
-      else if (from === 'Stage 2' && target === 'Stage') target = 'Stage 2';
-      return original.call(this, scene, target, clear);
-    };
-  })();
-
-  var SPEED = 1400;   // unidades/seg
+  var SPEED = 1400;   // unidades/seg do projetil
   var RANGE = 1600;   // alcance maximo antes de sumir
   var ENEMIES = ['Skeleton', 'Ghost', 'Wolf', 'BossSkull'];
 
-  // Morte e respawn: o codigo de eventos original nao toca na animacao do
-  // heroi nesses momentos (ele so escurece a tela e recarrega a cena), entao
-  // aqui os frames sao controlados na mao. Usar setAnimationFrame em vez de
-  // deixar o animator rodar sozinho evita que os eventos, que rodam ANTES
-  // deste callback, reiniciem a animacao do zero a cada frame.
-  // Contagem por QUADRO, nao por tempo decorrido: se o jogo escalar o tempo
-  // para zero (fade de morte, pausa), getElapsedTime devolve 0, o contador
-  // nunca avanca e o respawn ficaria preso para sempre.
-  var DEAD_FRAMES = 18, DEAD_EVERY = 5;     // ~18 x 5 = 90 quadros
-  var RESP_FRAMES = 21, RESP_EVERY = 4;     // ~21 x 4 = 84 quadros
+  // Morte e respawn contados por QUADRO, nao por tempo decorrido: o jogo escala
+  // o tempo durante o fade de morte, e com escala zero um contador por tempo
+  // trava para sempre — foi assim que o jogador ficava congelado ao renascer.
+  var DEAD_FRAMES = 18, DEAD_EVERY = 5;
+  var RESP_FRAMES = 21, RESP_EVERY = 4;
   var RESP_CAP = 90;                        // trava de seguranca, em quadros
 
-  // ------------------------------------------- inimigo preso contra parede
-  // Os marcadores Left/Right so cobrem as pontas das plataformas. Quando um
-  // degrau sobe no meio do caminho, o inimigo anda contra a face vertical e
-  // fica patinando ali para sempre.
+  // Uma fase so: nao ha roteamento de cenas nem clone de Stage.
   //
-  // Em vez de tentar adivinhar a geometria, aqui a deteccao e' por resultado:
-  // se ele deveria estar andando e o X praticamente nao muda por meio segundo,
-  // esta preso — e a direcao se inverte. Funciona com parede, com quina e com
-  // qualquer formato de terreno, sem depender de marcador nenhum.
-  // Medir quadro a quadro nao serve: o esqueleto anda a 2,48 unidades por
-  // quadro e o limiar anterior era 2 — qualquer titubeada contava como
-  // "preso", ele virava, andava de volta, virava de novo. Era o passo pra
-  // frente e pra tras.
-  //
-  // Agora a medicao e' por JANELA: guarda-se a posicao no inicio e, ao fim da
-  // janela, ve-se o quanto ele realmente avancou. Quem anda percorre dezenas
-  // de unidades; quem esta contra a parede fica na casa de zero.
-  // Janelas longas de proposito. A virada nos marcadores Left/Right dura uma
-  // fracao de segundo; se a janela for curta, meu giro cai junto com o do
-  // marcador, os dois se somam e o inimigo sai andando pela borda — foi assim
-  // que a caveira caiu no precipicio da fase 1.
-  var JANELA = { Skeleton: 120, Wolf: 240 };  // quadros (~2 s e ~4 s)
-  var AVANCO_MIN = 48;                        // unidades no periodo
-
-  // O inimigo esta em contato com um marcador de virada do proprio jogo?
-  function noMarcador(scene, e) {
-    var listas = ['Left', 'Right'];
-    for (var l = 0; l < listas.length; l++) {
-      var ms = scene.getObjects(listas[l]);
-      for (var i = 0; i < ms.length; i++) {
-        if (gdjs.RuntimeObject.collisionTest(e, ms[i], false)) return true;
-      }
-    }
-    return false;
-  }
-
-  function destravar(scene) {
-    for (var nome in JANELA) {
-      var objs = scene.getObjects(nome);
-      for (var i = 0; i < objs.length; i++) {
-        var e = objs[i];
-        var x = e.getX();
-
-        var pb = e.getBehavior('PlatformerObject');
-        if (pb && !pb.isOnFloor()) {          // no ar ele esta caindo, nao preso
-          e.__ancora = x; e.__janela = 0;
-          continue;
-        }
-
-        // Encostado num marcador, normalmente quem manda e' o jogo: interferir
-        // soma dois giros e joga o inimigo fora da plataforma. MAS se ele fica
-        // parado ali por muito tempo, o marcador claramente nao esta
-        // resolvendo — ele esta prensado entre o marcador e uma parede. Nesse
-        // caso o desempate vem daqui, depois do dobro da janela.
-        if (noMarcador(scene, e)) {
-          e.__noMarc = (e.__noMarc || 0) + 1;
-          if (e.__noMarc < JANELA[nome] * 2) {
-            e.__ancora = x; e.__janela = 0;
-            continue;
-          }
-        } else {
-          e.__noMarc = 0;
-        }
-        if (e.__ancora === undefined) { e.__ancora = x; e.__janela = 0; continue; }
-
-        e.__janela++;
-        if (e.__janela < JANELA[nome]) continue;
-
-        var avancou = Math.abs(x - e.__ancora);
-        e.__ancora = x;
-        e.__janela = 0;
-        if (avancou >= AVANCO_MIN) { e.__noMarc = 0; continue; }   // andando: nao mexer
-        e.__noMarc = 0;
-
-        var v = e.getVariables();
-        if (v.has('Direction')) {
-          // O esqueleto anda por esta variavel. O espelhamento precisa ser
-          // AJUSTADO ao novo rumo, nao alternado: alternar dessincroniza, e nao
-          // mexer deixa ele andando de costas depois de virar.
-          var dir = v.get('Direction').getAsString();
-          var novo = (dir === 'Left') ? 'Right' : 'Left';
-          v.get('Direction').setString(novo);
-          var fe = e.getBehavior('Flippable');
-          // Convencao do projeto, medida em jogo: Direction "Right" anda junto
-          // com flipX LIGADO (a arte nasce virada para a esquerda).
-          if (fe) fe.flipX(novo === 'Right');
-          e.setX(x + (novo === 'Right' ? recuo : -recuo));
-        } else {
-          var fb = e.getBehavior('Flippable');
-          if (fb) {
-            fb.flipX(!fb.isFlippedX());
-            e.setX(x + (fb.isFlippedX() ? recuo : -recuo));
-          }
-        }
-      }
-    }
-  }
+  // O destravar automatico de inimigos tambem foi REMOVIDO. Ele existia para
+  // compensar a fase gerada por script, que tinha paredes sem marcador de
+  // virada. Com os marcadores colocados a mao no editor ele fica desnecessario
+  // — e era ele que, ao virar o inimigo, o empurrava para dentro do abismo.
 
   // ---------------------------------------------------------------- helpers
   // Fase 1 e fase 2 rodam o mesmo codigo de eventos (code1/code4), entao tudo
   // aqui vale para as duas.
   function isStage(scene) {
-    var n = scene.getName();
-    return n === 'Stage' || n === 'Stage 2';
+    return scene.getName() === 'Stage';
   }
 
   function heroOf(scene) {
@@ -250,7 +132,6 @@
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
     if (!isStage(scene)) return;
 
-    destravar(scene);
 
     var hero = heroOf(scene);
     var dt = scene.getElapsedTime() / 1000;
