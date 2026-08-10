@@ -1,54 +1,49 @@
-# Patch incremental — Dogelon Mars
+# Patch — só o que mudou
 
-Só o que mudou em relação ao `dogelonskull-main.zip` original.
-**229 KB** em vez de 5,1 MB.
-
-Comparei os 277 arquivos originais com os 336 atuais, por hash MD5:
+Comparei o seu export com o build integrado, arquivo por arquivo (MD5).
+**314 KB** em vez dos 10 MB do pacote completo.
 
 | | |
 |---|---|
-| Inalterados (não vão no patch) | 216 |
-| Modificados | 39 |
-| Novos | 81 |
-| Removidos | 22 |
+| Inalterados (não vão no patch) | 292 |
+| Modificados | 3 |
+| Novos | 75 |
+| Removidos | 0 |
 
 ## Como aplicar
 
-Na raiz do seu repositório:
+Copie tudo por cima da pasta do seu export e suba:
 
 ```sh
-# 1. copiar os arquivos novos e modificados por cima
 cp -r caminho/do/patch/* .
 rm LEIA-PRIMEIRO.md
-
-# 2. apagar os do herói antigo, que não existem mais
-sh APAGAR-do-repo.sh
-rm APAGAR-do-repo.sh
-
-# 3. conferir e subir
-git status
 git add -A
-git commit -m "Retheme Dogelon Mars: herói, tiro, morte/respawn, cenário sci-fi, splash"
+git commit -m "Sprites Dogelon, tiro, controles PC e mobile"
 git push
 ```
 
-## Atenção ao passo 2
+Não precisa apagar nada: nenhum arquivo seu foi removido.
 
-Copiar por cima **não apaga** os 22 PNGs do herói antigo (`Idle-*`, `Run-*`,
-`Attack-*`, `Jump-*`, `Hit-1`, `HeroAttackHitbox-1`). Eles não quebram o jogo
-— o `data.js` não referencia mais nenhum deles — mas ficam ocupando espaço no
-repo e no deploy. O `APAGAR-do-repo.sh` usa `git rm --ignore-unmatch`, então
-é seguro rodar mesmo que algum já tenha sumido.
+## Os 3 modificados
 
-## Os 3 arquivos que carregam quase tudo
+- **`data.js`** — animações do Dogelon no `Hero`, o projétil no
+  `HeroAttackHitbox`, os 72 recursos novos, tela cheia em paisagem
+  (`scaleOuter`), EXIT GAME virou CONTROLS, marca do GDevelop desligada,
+  papel de parede do título cobrindo, sprite solto removido, fundo das cenas
+  escurecido
+- **`index.html`** — carrega os 3 scripts e um CSS que tira as margens da página
+- **`GUIMain-1-0.png`** — o retrato do HUD, que ainda era o herói de capa roxa
 
-- `data.js` (164 KB) — animações do Dogelon, projétil, tela de carregamento,
-  marca do GDevelop desligada, textos do menu
-- `tiles.png` (32 KB) — o cenário inteiro repintado com o tileset Foozle
-- `index.html` — só uma linha a mais, carregando o `dogelon-blast.js`
+## Os 75 novos
 
-## Nas próximas vezes
+- **72 PNGs** do Dogelon: 9 animações do herói (Idle, Run, Attack, Jump, Hit,
+  Fall, Dash, Dead, Respawn) e as 2 do projétil
+- **`dogelon-blast.js`** — tiro à distância, morte, respawn, tiro no ar
+- **`dogelon-controls.js`** — tela de CONTROLES e os 5 presets de teclado
+- **`dogelon-touch.js`** — controle de toque, menu tocável, tela cheia
 
-Depois deste primeiro commit, o Git já cuida do incremental sozinho: `git add
--A` só envia o que mudou. Este patch só é necessário agora porque o repo ainda
-está na versão original.
+## O que NÃO foi tocado
+
+Sua fase, o tilemap, os cenários, o céu marciano, o chefe caveira, os créditos,
+a splash, os sons. Nenhum arquivo seu foi apagado ou substituído fora dos 3
+listados acima.
