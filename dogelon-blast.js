@@ -47,11 +47,34 @@
     return h && h.length ? h[0] : null;
   }
 
+  // Quantos quadros o inimigo fica vermelho ao levar tiro (so o piscar).
+  var FLASH = 10;
+
   function damage(scene, enemy, dmg) {
     enemy.returnVariable(enemy.getVariables().get('enemyHP')).sub(dmg);
-    enemy.resetTimer('Hit');
-    enemy.returnVariable(enemy.getVariables().get('HitStun')).setNumber(1);
+
+    // NAO mexer em HitStun. Essa variavel e' o que trava o movimento do
+    // inimigo, e o codigo original so a usava no ataque corpo a corpo — onde
+    // era preciso chegar perto para acertar, entao o congelamento era um
+    // troco justo. Com tiro a distancia dava para prender o esqueleto parado
+    // de longe e matar sem risco. Agora ele leva o dano e SEGUE andando.
     enemy.setColor('255;0;0');
+    enemy.__flash = FLASH;
+  }
+
+  // Devolve a cor normal depois do piscar. Antes quem limpava era a logica de
+  // HitStun do jogo; sem ela, o inimigo ficaria vermelho para sempre.
+  function limparFlash(scene) {
+    var listas = ['Skeleton', 'Ghost', 'Wolf', 'BossSkull'];
+    for (var l = 0; l < listas.length; l++) {
+      var objs = scene.getObjects(listas[l]);
+      for (var i = 0; i < objs.length; i++) {
+        var e = objs[i];
+        if (!e.__flash) continue;
+        e.__flash--;
+        if (e.__flash === 0) e.setColor('255;255;255');
+      }
+    }
   }
 
   function spawnBlast(scene, hero) {
@@ -132,6 +155,8 @@
   gdjs.registerRuntimeScenePostEventsCallback(function (scene) {
     if (!isStage(scene)) return;
 
+
+    limparFlash(scene);
 
     var hero = heroOf(scene);
     var dt = scene.getElapsedTime() / 1000;
