@@ -9,7 +9,7 @@ gdjs.evtsExt__Gamepads__StickRotationValue = {};
 gdjs.evtsExt__Gamepads__StickRotationValue.idToCallbackMap = new Map();
 
 
-gdjs.evtsExt__Gamepads__StickRotationValue.userFunc0xba4f78 = function GDJSInlineCode(runtimeScene, eventsFunctionContext) {
+gdjs.evtsExt__Gamepads__StickRotationValue.userFunc0xbb4888 = function GDJSInlineCode(runtimeScene, eventsFunctionContext) {
 "use strict";
 /** @type {Gamepad[]} */
 const gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
@@ -51,7 +51,7 @@ gdjs.evtsExt__Gamepads__StickRotationValue.eventsList0 = function(runtimeScene, 
 {
 
 
-gdjs.evtsExt__Gamepads__StickRotationValue.userFunc0xba4f78(runtimeScene, eventsFunctionContext);
+gdjs.evtsExt__Gamepads__StickRotationValue.userFunc0xbb4888(runtimeScene, eventsFunctionContext);
 
 }
 
